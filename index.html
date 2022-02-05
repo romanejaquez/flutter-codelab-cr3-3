@@ -1,0 +1,1405 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Flutter Codelab / Coding Roulette: Full Stack Flutter Apps Workshop (pt.3): Firebase Authentication</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="flutter-codelab-cr3-3"
+                  title="Flutter Codelab / Coding Roulette: Full Stack Flutter Apps Workshop (pt.3): Firebase Authentication"
+                  environment="web"
+                  feedback-link="https://romanjustcodes.web.app">
+    
+      <google-codelab-step label="Overview" duration="0">
+        <h2 is-upgraded>What You&#39;ll Build in this Workshop:</h2>
+<ul>
+<li>Set up a Firebase project to connect to the login page of our Flutter App for a fictitious banking institution (Flutter Savings Bank)</li>
+</ul>
+<p>We will add the following features by implementing a serverless backend powered by Firebase:</p>
+<ul>
+<li>Firebase Authentication using Email and Password</li>
+<li>Bonus: Create new accounts under Firebase Authentication</li>
+</ul>
+<p>You will also learn about the following:</p>
+<ul>
+<li>Create Flutter User interfaces with ease</li>
+<li>Common Flutter Layout strategies using just core widgets</li>
+<li>Creating custom Flutter widgets and achieve widget composition</li>
+<li>Using Material Icon fonts</li>
+<li>State Management using Provider to decouple Business Logic of Components (BLoC)</li>
+</ul>
+<p>We&#39;ll hook up Firebase to our login page, and as bonus, we&#39;ll learn how to create new accounts to connect our users to.</p>
+<p class="image-container"><img alt="Login Screen" src="img/da7b2ab2b7c2faf5.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create a Firebase Project" duration="0">
+        <p>We&#39;ll create our very own first Firebase project, where we&#39;ll set up the serverless backend that will power this application.</p>
+<p>Open a browser tab and navigate to the <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a>, where you&#39;ll create your first Firebase project under the free tier (called Spark) - no worries, you won&#39;t be charged or asked for a credit card.</p>
+<p>You&#39;ll be asked to log in with your Gmail account. Go ahead and provide it so you an log in.</p>
+<p>On the Firebase Console&#39;s landing page, click on the <strong>Create a Project</strong> button:</p>
+<p class="image-container"><img alt="Login Screen" src="img/8795a75e9db8ab46.png"></p>
+<p>Immediately you get presented with a wizard, asking you for a project name. Enter &#34;flutter-bank-app&#34;. Accept the Firebase Terms and hit <strong>Continue</strong>:</p>
+<p class="image-container"><img alt="Login Screen" src="img/5f190dd02d2e77cc.png"></p>
+<p>Next steps asks for enabling Google Analytics for your project. Let&#39;s disable it for now by just unchecking the <strong>Enable Google Analytics for this project</strong> toggle - we don&#39;t need it for this project. Then click on <strong>Create Project</strong>:</p>
+<p class="image-container"><img alt="Login Screen" src="img/8c680569ab440c2c.png"></p>
+<p>Be patient as Firebase is provisioning your project on the Google Cloud, so you&#39;ll get shown the following screen for a bit:</p>
+<p class="image-container"><img alt="Login Screen" src="img/3ea3a264f11829d7.png"></p>
+<p>Until the project is fully created, then you can click on <strong>Continue</strong>:</p>
+<p class="image-container"><img alt="Login Screen" src="img/2228ceb91d834683.png"></p>
+<p>Your brand new project should look like follows:</p>
+<p class="image-container"><img alt="Login Screen" src="img/f51ff3389e399329.png"></p>
+<p>Notice that you are on the Free Tier (Spark), with the option to Upgrade to Blaze (Pay-As-You-Go), but for the things we&#39;ll implement we don&#39;t have to upgrade:</p>
+<p class="image-container"><img alt="Login Screen" src="img/368cfa35c659d182.png"></p>
+<p>Expand the left-hand side menu named <strong>Build</strong>. Under <strong>Build</strong> you should find <strong>Authentication</strong>. Navigate to it and click on <strong>Get Started</strong>:</p>
+<p class="image-container"><img alt="Login Screen" src="img/c3e780a91ae2eafc.png"></p>
+<p>Firebase Authentication allows you to provide an extra layer of security to your apps by allowing your users to authenticate prior to using it in order to protect sensitive areas of your app that should be protected under user authentication. It also provides backend services, easy-to-use SDKs, and ready-made UI libraries to authenticate users to your app. It supports authentication using passwords, phone numbers, popular federated identity providers like Google, Facebook and Twitter, and more.</p>
+<p>In this workshop we&#39;ll be focused on email and password authentication only, but feel free to explore the rest of the options available, such as third-party authentication (also free).</p>
+<p>Right on the Authentication page, make sure you&#39;re in the <strong>Sign-in method</strong> tab. Find the <strong>Email/Password</strong> Sign-in provider option, and click on it:</p>
+<p class="image-container"><img alt="Login Screen" src="img/79a64a5999d7ae6d.png"></p>
+<p>Click <strong>Enable</strong> in the <strong>Email/Password</strong> panel. We will only work on the simple email/password workflow for this workshop, but I invite you to explore the other email/password workflow features available, such as passwordless sign-in using an email link, email address verification, password recovery, etc.</p>
+<p>Click <strong>Enable</strong>, then <strong>Save</strong>:</p>
+<p class="image-container"><img alt="Login Screen" src="img/3af2f6bb73988d9f.png"></p>
+<p>It should look like this after enabling:</p>
+<p class="image-container"><img alt="Login Screen" src="img/f3443c847d0ec8e4.png"></p>
+<p>Your project is ready for email/password authentication - all we need is our first user! Let&#39;s proceed and add our first user.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Add a Test User to try out the Firebase Authentication" duration="0">
+        <p>Right on the <strong>Authentication</strong> page, click on the <strong>Users</strong> tab. Click on the <strong>Add User</strong> button:</p>
+<p class="image-container"><img alt="Login Screen" src="img/9d479c80f7708c3b.png"></p>
+<p>On the dialog form that appears, add a valid email address (doesn&#39;t even have to be a real one, as long as it&#39;s valid ;)) and a password (make sure you remember it for when we test). Use something like *<strong>client@gmail.com</strong> with password (of at least 6 characters) <strong>123456</strong>, then click on <strong>Add user</strong>:</p>
+<p class="image-container"><img alt="Login Screen" src="img/e5abe9ce2094329a.png"></p>
+<p>Your new user should look like this after being created:</p>
+<p class="image-container"><img alt="Login Screen" src="img/7a81d9b698cf206.png"></p>
+<p>And we&#39;re all set to hook up this project to our Flutter Bank App! Let&#39;s proceed!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Connect our Firebase project to our app" duration="0">
+        <p>Let&#39;s now plug our project to Firebase so we can authenticate our users before letting them in further. For now we will be using the test account we created earlier in Firebase, but further down we&#39;ll show how to create these accounts programmatically as well, if the need arises.</p>
+<p>We&#39;ll be using the Firebase SDK which luckily comes pre-installed with DartPad, so we don&#39;t have to install anything. You can verify this in DartPad by clicking on the information icon on the lower right corner, which shows a dialog with all packages installed and their versions:</p>
+<p class="image-container"><img alt="Login Screen" src="img/1e56bdeb73eff54f.png"></p>
+<p>We need to grab some configuration values generated by Firebase that we&#39;ll use to initialize an instance of the Firebase SDK in our app. Each platform has its proprietary way of consuming these configuration values, which in Firebase they are available as <strong>apps</strong>. Let&#39;s proceed and create a web app in our Firebase project.</p>
+<p>Back in the Firebase Console, Click on <strong>Project Overview</strong>, then click on the web icon to set up a web app:</p>
+<p class="image-container"><img alt="Login Screen" src="img/cdfdff136fbbb738.png"></p>
+<p>In the wizard, you&#39;re asked to add a nickname to register your app under - put <strong>Flutter Savings Bank</strong>. Then click <strong>Register App</strong>. No need to set up Firebase Hosting (which is awesome!) but not needed for this project.</p>
+<p class="image-container"><img alt="Login Screen" src="img/eb8ef9cded7e427a.png"></p>
+<p>In the next step, you&#39;re required to add the Firebase SDK - in our case all we need is the chunk of code provided in this step to initialize / bootstrap the Firebase SDK already installed on DartPad. No worries if you can&#39;t copy it at this point, I&#39;ll show you where to find it in the project. For now, click at the bottom where it says <strong>Continue to console</strong>.</p>
+<p class="image-container"><img alt="Login Screen" src="img/aa08754d01123401.png"></p>
+<p>This action will take you back to the project, where you can see now that the newly web app has been created and available. Go ahead and click on the cog next tho the web app name:</p>
+<p class="image-container"><img alt="Login Screen" src="img/c864b6e9dbb25bbb.png"></p>
+<p>This option takes  you to the project settings associated to this web app we just created. Right on the <strong>General</strong> tab, you get a lot of relevant information.</p>
+<aside class="special"><p>Make sure to set the <strong>Support email</strong> field under the <strong>Public Settings</strong> section (which by default shows as <strong>Not configured</strong>); open the dropdown and select the email account associated with this Firebase project. Don&#39;t forget this!</p>
+</aside>
+<p class="image-container"><img alt="Login Screen" src="img/9cf10f0c6b577946.png"></p>
+<p>Scroll all the way to the bottom of the <strong>General</strong> tab and you should find the configuration settings you need to grab to initialize the Firebase SDK in DartPad.</p>
+<p class="image-container"><img alt="Login Screen" src="img/47b45d51cf8814de.png"></p>
+<p>Grab the configuration delimited by the <strong>const firebaseConfig</strong> since we&#39;ll need back on our DartPad project.</p>
+<p>Now, back on our Flutter code, right at the very top, import the Firebase-related packages we will be using in this project (Firebase Core, Auth and Cloud Firestore):</p>
+<pre><code language="language-flutter" class="language-flutter">import &#39;package:firebase_core/firebase_core.dart&#39;;
+import &#39;package:cloud_firestore/cloud_firestore.dart&#39;;
+import &#39;package:firebase_auth/firebase_auth.dart&#39;;
+
+</code></pre>
+<p>Your code should look like this:</p>
+<p class="image-container"><img alt="Login Screen" src="img/e934fdb4a15c0b3.png"></p>
+<p>Now, locate the <strong>main</strong> method (usually at the top of the file) and inside the method, right on top of the <strong>runApp</strong> method, perform the initialization of Firebase, preceded by a call to <strong>WidgetsFlutterBinding.ensureInitialized</strong> - this ensures that the widget binding from the framework is initialized before we make any other calls. Call the <strong>Firebase.initializeApp</strong> method, passing the name parameter <strong>option</strong> and providing the properties inside config object we copied earlier from the Firebase SDK configuration from Firebase Console. Also make sure to decorate the method with the <strong>async</strong> keyword since the <strong>Firebase.initializeApp</strong> is an asynchronous call.</p>
+<p>Your code should look like this:</p>
+<p class="image-container"><img alt="Login Screen" src="img/b0f8d6a9c967b433.png"></p>
+<p>With that in place, this initializes the Firebase instance and we can start making calls against it. Let&#39;s proceed now to tap into the authentication functionality.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create the LoginService" duration="0">
+        <p>Instead of tapping into the authentication functionality straight from the Firebase instance, let&#39;s do our due diligence and create a wrapper service class around this functionality which we&#39;ll conveniently call <strong>LoginService</strong>. This approach is more in line with best practices from the industry in which you hide the implementation details and business logic behind a service, and just provide an API or entrypoint methods to access its functionality.</p>
+<p>For this approach we will leverage Flutter&#39;s <a href="https://docs.flutter.dev/development/data-and-backend/state-mgmt/simple" target="_blank"><strong>Provider</strong></a> package, which provides (pun intended!) a simple approach to state management for both small and large applications.</p>
+<p>Let&#39;s start by creating a class called <strong>LoginService</strong> that extends <strong>ChangeNotifier</strong> since we want components that are listening to this service to be notified of changes that occur within itself, thus rebuilding themselves accordingly.</p>
+<p>You can place this class anywhere at the bottom of the file:</p>
+<p class="image-container"><img alt="Login Screen" src="img/bff42c721ab1a326.png"></p>
+<p>Let&#39;s add our first feature, which is the ability to sign in using a provided username and password. Create a method called <strong>signInWithEmailAndPassword</strong> which takes two parameters (email, password). Make it return a <strong>Future</strong> type <strong>bool</strong> since this method call will be an asynchronous call:</p>
+<p class="image-container"><img alt="Login Screen" src="img/447887cda5b29d58.png"></p>
+<p>This method must return something so let&#39;s continue adding the actual call to Firebase authentication.</p>
+<p>Let&#39;s make a call to one of the classes provided to perform the Firebase Authentication called <strong>FirebaseAuth</strong>, pull the currently initialized instance and call the conveniently named <strong>signInWithEmailAndPassword</strong> from it, passing both email and password supplied to the wrapper method. This FirebaseAuth method returns an object of type <strong>UserCredential</strong>, which encapsulates metadata associated with the authenticated user (such as display name, authenticated user Id, display name, profile photo, among other useful metadata).</p>
+<p>For now we&#39;ll only capture the authenticated user id and store it internally, so I&#39;ll provision a property called <strong>_userId</strong> type <strong>String</strong> and hold its value there. Return true assuming this operation was successful:</p>
+<p class="image-container"><img alt="Login Screen" src="img/84ff2d1b13e3981a.png"></p>
+<p>To be more diligent about whether this will succeed or not, let&#39;s wrap our implementation inside a <strong>try/catch</strong>, capturing a very convenient and specific <strong>FirebaseAuthException</strong> in the event of an error. Return false from this wrapper method to signify that the operation was not successful:</p>
+<p class="image-container"><img alt="Login Screen" src="img/474b8b222a8e4c20.png"></p>
+<p>I&#39;ll also provide a simple getter method to fetch the user id when it&#39;s set:</p>
+<p class="image-container"><img alt="Login Screen" src="img/33bb63516c8278b3.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Consume the LoginService in the Login Page" duration="0">
+        <p>Now that we&#39;ve created our login service with an API to perform an authenticated call provided an email and password, let&#39;s consume this service.</p>
+<p>First since we are leveraging the Provider pattern, we need to inject this newly created service at the root of our program.</p>
+<p>Go to the <strong>runApp</strong> method, and wrap our <strong>FlutterBankApp</strong> inside a <strong>MultiProvider</strong> widget. We&#39;ll be using a MultiProvider widget since we&#39;ll be providing / injecting more than one service later on; we&#39;re setting ourselves for success pretty much. Supply an empty array for the <strong>providers</strong> property in the <strong>MultiProvider</strong> widget.</p>
+<p>In the event of having a single service, a Provider would&#39;ve sufficed. Make sure to import the <strong>provider</strong> package at the top using the line:</p>
+<pre><code language="language-flutter" class="language-flutter">import &#39;package:provider/provider.dart&#39;;
+
+</code></pre>
+<p>Your code should look as follows:</p>
+<p class="image-container"><img alt="Login Screen" src="img/ad0c949d4f43b200.png"></p>
+<p>Now that we have the <strong>MultiProvider</strong> in place, inject the service to be provided to the application - in our case the <strong>LoginService</strong>. Add it to the list of providers by first wrapping it inside a <strong>ChangeNotifierProvider</strong> (a provider for services that notify their listeners) and creating an instance of it:</p>
+<p class="image-container"><img alt="Login Screen" src="img/85425c04eb3b512c.png"></p>
+<p>Now that the service is injected, we are ready to consume it anywhere.</p>
+<p>Let&#39;s start by invoking it upon the user providing something in the username and password fields. We&#39;ll extract their values using their corresponding controllers, then supplying the values to our <strong>LoginService</strong>&#39;s <strong>signInWithEmailAndPassword</strong> method.</p>
+<p>If the operation is successful (the user is authenticated) we want to allow the user to proceed inside the application. Let&#39;s create the placeholder widget page for what will be our landing page.</p>
+<p>Create a class called <strong>FlutterBankMain</strong> that extends <strong>StatelessWidget</strong>. For now, make it return a <strong>Scaffold</strong> with a <strong>Center</strong> widget wrapping a <strong>Text</strong> widget that says &#34;main page&#34; as the Scaffold&#39;s body:</p>
+<p class="image-container"><img alt="Login Screen" src="img/f2d785b4f90cb0fe.png"></p>
+<p>And now that we have a place to land, let&#39;s go to the <strong>FlutterBankLogin</strong> page widget.</p>
+<h2 is-upgraded>Implementing the &#34;Happy Path&#34; of the login page authentication</h2>
+<p>Inside its <strong>build</strong> method, create an instance of the <strong>LoginService</strong> service, fetching by via the <strong>Provider.of</strong> factory method, passing the <strong>BuildContext</strong> and the <strong>listen: false</strong> flag so it is a one-time fetch and our widget doesn&#39;t rebuild all the time.</p>
+<p class="image-container"><img alt="Login Screen" src="img/cb51f52959c68b68.png"></p>
+<p>Proceed to the <strong>Sign In FlutterBankMainButton</strong> widget, inside its <strong>onTap</strong> handler, retrieve the value of the <strong>TextField</strong> widgets via their corresponding controllers and store them in variables (username and pwd respectively):</p>
+<p class="image-container"><img alt="Login Screen" src="img/59c640f789457290.png"></p>
+<p>Now, tap into the provided service (LoginService) and call its <strong>signInWithEmailAndPassword</strong> passing the username and password collected, and capture the returned boolean flag in a variable called <strong>isLoggedIn</strong>. Make sure to <strong>await</strong> on this call as it is asynchronous, and also decorate the <strong>onTap</strong> handler with the <strong>async</strong> keyword, as such:</p>
+<p class="image-container"><img alt="Login Screen" src="img/6898bbc75f835d0c.png"></p>
+<p>If the operation succeeded, then proceed to clear the fields via their controllers as well (for the next try), and navigate the user to our shell page for the main page (FlutterBankMain) we created earlier:</p>
+<p class="image-container"><img alt="Login Screen" src="img/bc7fa95f8ccb2c92.png"></p>
+<p>Take this for a spin (of course, remember this is the &#34;happy path&#34; - make sure to provide the same username and password of the test user we configured in our Firebase project - we don&#39;t have validation of any kind; we&#39;ll implement some version of that later).</p>
+<p>If you did everything correctly (and supplied the correct email and password) you should be redirected to the dummy main page after hitting the <strong>Sign In</strong> button, as shown below:</p>
+<p class="image-container"><img alt="Login Screen" src="img/f3e247343383c01e.gif"></p>
+<p>If you type the wrong stuff, nothing happens - it just hangs there. That&#39;s because we didn&#39;t implement any error handling nor validation. Let&#39;s add some simple validation, disabling of buttons when no input is provided, etc.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Incorporate Simple Field and Button Validation" duration="0">
+        <p>Let&#39;s add some guard rails around this login page, to prevent fat-fingering and make this more close to a real implementation.</p>
+<h2 is-upgraded>Email validation</h2>
+<p>Let&#39;s create a useful and simple email validation logic using Regex that we can reuse. Go to the <strong>Utils</strong> class, and add a method called <strong>validateEmail</strong> that takes a <strong>String</strong> parameter.</p>
+<p>Validate the provided String whether its is not null nor empty and it passes the Regex email validation, as follows:</p>
+<p class="image-container"><img alt="Login Screen" src="img/32a4f231620af25.png"></p>
+<p>Hey, let me give you a hand with that Regex - copy / paste it from the snipped below:</p>
+<pre><code language="language-flutter" class="language-flutter">static bool validateEmail(String? value) {
+  String pattern =
+      r&#34;^[a-zA-Z0-9.!#$%&amp;&#39;*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]&#34;
+      r&#34;{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]&#34;
+      r&#34;{0,253}[a-zA-Z0-9])?)*$&#34;;
+  RegExp regex = RegExp(pattern);
+  
+  return (value != null || value!.isNotEmpty || regex.hasMatch(value));
+}
+
+</code></pre>
+<p>Back on our <strong>FlutterBankLogin</strong> widget, let&#39;s create a convenient method called <strong>validateEmailAndPassword</strong> which returns a boolean flag, and validates whether any of the fields are empty plus the email is correct using that utility email validation method we just did; add it anywhere inside the <strong>FlutterBankLoginState</strong> class, as such:</p>
+<p class="image-container"><img alt="Login Screen" src="img/539b51667be5c28c.png"></p>
+<p>Now, locate the <strong>Sign In FlutterBankMainButton</strong> widget and set its <strong>enabled</strong> property (currently <strong>true</strong>) to the returning value of this method, as follows:</p>
+<p class="image-container"><img alt="Login Screen" src="img/44b1da471e4b8ec6.png"></p>
+<p>What is this doing? Upon the textfields triggering changes as the user enters text, a notification is triggered from each of the textfields&#39; <strong>onChanged</strong> event, which subsequently triggers a rebuild of the widget; the wigdet rebuilds itself, evaluates the content of the textfields, and returns true of false depending on the validation, allowing the <strong>FlutterBankMainButton</strong> to re-render based on this value and showing enabled or disabled. Pretty cool!</p>
+<p class="image-container"><img alt="Login Screen" src="img/64b8a7eba9dcb2ac.gif"></p>
+<h2 is-upgraded>Error Handling and Displaying</h2>
+<p>Remember we can still provide a bad but valid email and a wrong password. We really want to know what happens when we do. We are currently capturing the FirebaseAuthException exception, but we are not doing anything with it. Let&#39;s see what we can do with it.</p>
+<p>In the <strong>LoginService</strong>, create an additional property for the error message; call it <strong>_errorMessage</strong>, type <strong>String</strong>. Create a corresponding getter for it:</p>
+<p class="image-container"><img alt="Login Screen" src="img/41173eb6a92dbd9b.png"></p>
+<p>I&#39;ll also create a convenient setter method, which internally resets the error message property to empty, as well as call its internal <strong>notifyListeners</strong> thanks to extending the <strong>ChangeNotifier</strong> class, as follows:</p>
+<p class="image-container"><img alt="Login Screen" src="img/ab9b008efb6bc8b.png"></p>
+<p>The <strong>notifyListeners</strong> will make it so that any widget listening ot the <strong>LoginService</strong> will be notified to rebuild itself based on changes (in this case, we&#39;ll reset or set the error message property, which we&#39;ll display on the UI in a moment).</p>
+<p>Call this method inside the <strong>signInWithEmailAndPassword</strong>, both at the beginning and inside the catching of the FirebaseAuthException, so we reset the value initially, and in the event of an error, we capture it and set it, as follows:</p>
+<p class="image-container"><img alt="Login Screen" src="img/de6ff0389b66dec8.png"></p>
+<p>Back in the <strong>FlutterBankLogin</strong> widget, inside the text fields&#39; structure, below the password field, we&#39;ll insert a <strong>Consumer</strong> widget that will listen to the <strong>LoginService</strong> upon any changes that occur in this service (mostly related to the error message) and thus this widget will display the state of the error message in a simple widget structure composed of an <strong>Icon</strong> and a <strong>Text</strong> widget.</p>
+<p>Let&#39;s proceed:</p>
+<p>Right below the password <strong>TextField</strong>, insert a <strong>Consumer</strong> widget that listens to the <strong>LoginService</strong>; return an empty container from its required <strong>builder</strong> method:</p>
+<p class="image-container"><img alt="Login Screen" src="img/1ef2d90e0d1aac43.png"></p>
+<p>Now, this widget, upon any changes triggered by the <strong>LoginService</strong> (via calling its <strong>notifyListeners</strong> method internally) will cause its <strong>builder</strong> method to execute, thus rebuilding its contents. So on every turn, we check for the existence of an error message by calling the provided <strong>LoginService</strong> instance through its builder method (lService) and its convenient method <strong>getErrorMessage</strong>. If the error is empty, then just return an empty <strong>SizedBox</strong> widget, 40px height (to compensate for the absence of a label):</p>
+<p class="image-container"><img alt="Login Screen" src="img/d1bb97a345489f1f.png"></p>
+<p>Otherwise, return a widget structure leveraging the existing <strong>Container</strong> widget being returned, as follows:</p>
+<ul>
+<li>padding: 10px all around</li>
+<li>child: a <strong>Row</strong> widget with the following:  <ul>
+<li>an <strong>Icon</strong> widget (Icons.warning), red</li>
+<li>some space (SizedBox), 10px wide</li>
+<li>a <strong>Text</strong> widget wrapped inside an <strong>Expanded</strong> so its contents will flow and wrap; add a red color to it and feed the <strong>errorMsg</strong> property to it.</li>
+</ul>
+</li>
+</ul>
+<p>Your code should look like this:</p>
+<p class="image-container"><img alt="Login Screen" src="img/847e965acd4c26f9.png"></p>
+<p>Now, let&#39;s take this implementation for a spin. Type the right email, but with the wrong password. Then try a wrong email (valid also), and with the wrong password. Observe the behavior - what errors do you get? It should behave as in the animation below:</p>
+<p class="image-container"><img alt="Login Screen" src="img/d551519e395e144a.gif"></p>
+<p class="image-container"><img alt="Login Screen" src="img/dd84eded791d021b.gif"></p>
+<p>What I love about this implementation is that the Firebase Authentication is providing me with these relevant and proper error messages based on the validation it performs on its end, that way my app is supported on both fronts. Thank you Firebase!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Clean-Up" duration="0">
+        <p>Let&#39;s perform some clean-up tasks in our <strong>FlutterBankLogin</strong> widget now that we&#39;re pretty much done with this screen, for example we need to dispose of some of the components we&#39;ve created and used, such as the <strong>TextEditingController</strong> instances we used for each of our fields.</p>
+<p>In the <strong>FlutterBankLoginState</strong> class, override the <strong>dispose</strong> method; this method is used for those same purposes: cleaning up resources before this widget itself gets disposed by the framework. Let&#39;s go ahead and dispose of the controllers in this method, prior to disposing of this widget itself, as follows:</p>
+<p class="image-container"><img alt="Login Screen" src="img/dbb8e6d5632cce6f.png"></p>
+<aside class="special"><p>This is a best-practice activity that should be incorporated in your Flutter development routine: always clean up after yourself and dispose of unused resources, which might lead to unintended results later, affect the performance of your app due to memory leaks, etc. Keep it always in mind ;)</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Wrap-up" duration="0">
+        <p>In this codelab, we accomplished the following:</p>
+<ul>
+<li>Wrapped up the login page (<strong>FlutterBankLogin</strong> page)</li>
+<li>Set up our Firebase project</li>
+<li>Familiarize ourselves with the Firebase Console</li>
+<li>Create a test user account</li>
+<li>Set up Email and Password as our Sign-in / Authentication method</li>
+<li>Initialize Firebase SDK using the configuration values provided by our Firebase project</li>
+<li>Hooked up our login page with the Firebase SDK and authentication mechanism</li>
+<li>Integrated the Provider package as our default State Management strategy</li>
+<li>Created and consumed the Login Service, which wraps and encapsulates our authentication feature</li>
+</ul>
+<p>In the <a href="https://romanejaquez.github.io/flutter-codelab-cr3-4" target="_blank">next codelab</a>, we&#39;ll work on the landing page where we&#39;ll be consuming data from Cloud Firestore, creating more custom widgets, set up the signing out functionality, and more, so head on to the next codelab! See you there!</p>
+<h3 is-upgraded>Please don&#39;t forget to follow me on social media:</h3>
+<ul>
+<li>On Twitter (<a href="https://www.twitter.com/drcoderz" target="_blank">@drcoderz</a>)</li>
+<li>On YouTube (<a href="https://www.youtube.com/channel/UCKsp3r1ERjCpKJtD2n5WtPg" target="_blank">Roman Just Codes</a>)</li>
+<li>On My <a href="https://romanjustcodes.web.app/#/home" target="_blank">Personal Portfolio</a></li>
+<li>On <a href="https://medium.com/@romanejaquez" target="_blank">Medium</a></li>
+<li>On <a href="https://www.linkedin.com/in/roman-jaquez-8941a424/" target="_blank">LinkedIn</a></li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="BONUS: New Account Registration" duration="0">
+        <p>This is a nice-to-have, but great if you could integrate it in your app, which is the ability to create new user accounts programmatically right from the app as opposed to manually the way we did it earlier through the Firebase console; that&#39;s why I&#39;m providing it as a bonus codelab section.</p>
+<p>The following is what we&#39;ll be accomplishing:</p>
+<ul>
+<li>creating a new screen (<strong>FlutterAccountRegistration</strong>) which will allow users to create new accounts, which will get registed in Firebase as new users</li>
+<li>update our <strong>LoginService</strong> with a new API to allow us to create new accounts</li>
+<li>upon successful account creation, we redirect users back to the login page, allowing them to login with the new account created.</li>
+</ul>
+<p class="image-container"><img alt="Registration Screen" src="img/9d3fe01cb6a220c.gif"></p>
+<p class="image-container"><img alt="Registration Screen" src="img/83ed8cbdbd9f3895.gif"></p>
+<p>Let&#39;s proceed and create the screen for it.</p>
+<h2 is-upgraded>Creating the Account Registration screen</h2>
+<p>We&#39;ll do the same pretty much as in the login screen, where we&#39;ll create a class that extends <strong>StatefulWidget</strong> since we need to maintain some local state to trigger rebuilds based on the state of the textfields and buttons. Let&#39;s call it <strong>FlutterAccountRegistration</strong>, and return an empty <strong>Scaffold</strong> from its <strong>build</strong> method:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/b1e5a7dd0b0c2234.png"></p>
+<p>Let&#39;s start adding some pieces to our <strong>Scaffold</strong> widget and make sure that we can see it while we develop it.</p>
+<aside class="special"><p>Note: while developing this page, let&#39;s set it as the initial page to avoid having to navigate to it. Go to the <strong>FlutterBankApp</strong> and make the <strong>home</strong> widget the <strong>FlutterAccountRegistration</strong> widget instead of the <strong>FlutterBankSplash</strong> (we&#39;ll switch it back later):</p>
+</aside>
+<p class="image-container"><img alt="Registration Screen" src="img/f00db1e923b4bb21.png"></p>
+<p>Add something to the <strong>Scaffold</strong>&#39;s body real quick to see it on the screen; like a <strong>Center</strong> widget with a <strong>Text</strong> widget as its child, like so:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/aaded3722155be51.png"></p>
+<p>Running this through DartPad to confirm we can see the account registration widget we&#39;re building:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/1c769909c5616b41.png"></p>
+<p>Let&#39;s continue!</p>
+<p>In the <strong>FlutterAccountRegistrationState</strong> class, add the required controllers; we will be managing three textfields (new username, password and password confirmation); just so we don&#39;t forget, go ahead and override the <strong>dispose</strong> method and dispose of them now as opposed to leave it ‘til the end:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/5a70703df9f9667b.png"></p>
+<p>Back to the widget&#39;s <strong>build</strong> method; in the <strong>Scaffold</strong>, set its background color to white, plus add a custom-styled <strong>AppBar</strong> widget so it matches our design, by setting the <strong>Scaffold</strong>&#39;s <strong>appBar</strong> property. Add the following specs to it:</p>
+<ul>
+<li>elevation: zero, so it looks flat without shadow</li>
+<li>iconTheme: use our mainThemeColor to match our design</li>
+<li>backgroundColor: transparent</li>
+<li>title: use our app icon, 40px, and use the mainThemeColor</li>
+<li>centerTitle: true, to center the icon on the app bar</li>
+</ul>
+<p>Your code should look like this inside the build method:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/86d703d5b02fbe43.png"></p>
+<p>And if you run this through DartPad, you should see this:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/4125cd90f88f4ce5.png"></p>
+<p>Let&#39;s move along and focus on the inner structure. We&#39;ll need a <strong>Column</strong> widget to lay out our widgets vertically (the three fields and the button) so we&#39;ll do just that.</p>
+<p>Replace the existing <strong>Center</strong> widget in the body of the <strong>Scaffold</strong> by a <strong>Container</strong> widget with 30px of padding all around, and as its child a <strong>Column</strong> with its items aligned to the left horizontally:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/a1a5f629c17db3b8.png"></p>
+<p>Let&#39;s work on the top portion of the account registration widget structure.</p>
+<p>This will be composed of a <strong>Text</strong> widget for a title, plus the three textfields. We want this section  to cover most of the real estate in the column, so we&#39;ll build it inside an <strong>Expanded</strong> widget, that in turn wraps a <strong>Column</strong> widget with its children left align, as follows:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/b6548c927495abd2.png"></p>
+<aside class="special"><p>For the next couple of sections, we&#39;ll focus only on the structure inside the <strong>Expanded</strong> widget, for brevity and space</p>
+</aside>
+<p>I&#39;ll start by adding the title of this page widget using a <strong>Text</strong> widget with the proper style, and adding some spacing by wrapping it inside a <strong>Container</strong> with 40px of margin below it:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/4409ef8189488b19.png"></p>
+<p>Let&#39;s start looking at how it&#39;s coming out on DartPad:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/d2c2a38ab020d49e.png"></p>
+<p>Just like before, we&#39;ll enclose our textfields in a <strong>Container</strong> widget with some styling to make them look round and borderless, with 20px of margin underneath them, plus all the styles they require. I feel we could refactor a bit how we build these widgets and use some helper methods, shall we?</p>
+<p>Instead of typing out all the long <strong>InputDecoration</strong> block, as well as repeat the <strong>Container</strong> styles for each of these fields, I&#39;ll create a utility method for the fields that generate this chunk of widget code for me.</p>
+<p>Let&#39;s go to the <strong>Utils</strong> class, and create a method called <strong>generateInputField</strong> that will take the following parameters:</p>
+<ul>
+<li>hintText: a String for the hint text</li>
+<li>iconData: an IconData for the icon</li>
+<li>controller: the TextEditingController instance</li>
+<li>isPasswordField: a boolean flag to denote whether is a regular field or a password field</li>
+<li>onChanged: a callback object type Function</li>
+</ul>
+<p>Your code should look like this:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/cbea2acee097e27b.png"></p>
+<p>In the provided <strong>Container</strong> inside this utility method, then populate it with the <strong>Container</strong> related styles, and the <strong>TextField</strong> widget, populating all parameters being supplied as follows:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/6f50903cb530538e.png"></p>
+<p>This way we can automate and optimize the way we are creating these widgets.</p>
+<p>Now back to our account registration page, you can use this utility method as such:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/22cfd31c61855146.png"></p>
+<p>Running it through DartPad and we get this:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/a27b73142bfe8dba.png"></p>
+<p>A bit tight in between the fields. Well, just go back to the <strong>Utils.generateInputField</strong> method, and add a <strong>margin: const EdgeInsets.only(bottom: 20)</strong> to the parent *<em>Container</em> widget and you&#39;ll see how it applies to all of them right away:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/50e20a079e8a217e.png"></p>
+<p>Run it again through DartPad:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/5a88df675b980838.png"></p>
+<p>Nice! See how easy is to create utility methods that generate boilerplate widget code for you! Such a beauty!</p>
+<p>Let&#39;s keep rolling - now we&#39;ll work on the bottom button that will trigger the registration process.</p>
+<p>Right under the <strong>Expanded</strong> widget enclosing all fields, let&#39;s add (yeah, another one of our reusable widgets - now notice the advantage of creating custom reusable widgets!) our <strong>FlutterBankMainButton</strong> here, with the label <strong>Register</strong>, enabled <strong>true</strong> with an empty callback handler for its <strong>onTap</strong> event:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/d307d8fcf965ac14.png"></p>
+<p>View it on DartPad by hitting <strong>Run</strong>:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/c6a9e8ee8b3e8950.png"></p>
+<p>Nice - our UI is fully in place. Now let&#39;s add the functionality it requires to trigger the registration, starting from the Service.</p>
+<h2 is-upgraded>Add the account registration endpoint to the LoginService</h2>
+<p>We don&#39;t have this functionality yet so let&#39;s add it to our login service.</p>
+<p>Let&#39;s add a method called <strong>createUserWithEmailAndPassword</strong>, which will take a <strong>String</strong> for the email, and another one for the password, and returns a <strong>Future</strong> of <strong>bool</strong> as it will be an asynchronous call and we should wait on it, therefore decorate the block with the <strong>async</strong> keyword as well:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/404f88e131d3442b.png"></p>
+<p>Just like before, add a <strong>try/catch</strong> (or a more condensed version, a <strong>try/on</strong>) exception block to make the account creation call inside of it; call the <strong>FirebaseAuth.instance.createUserWithEmailAndPassword</strong>, passing both the email and password provided, and return <strong>true</strong> assuming the returned <strong>userCredentials</strong> are available, otherwise return <strong>false</strong> from the captured <strong>FirebaseAuthException</strong>, as below:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/ae692c07b8597fc8.png"></p>
+<p>With that in place, let&#39;s go ahead and consume it on our account registration widget.</p>
+<h2 is-upgraded>Consume the LoginService provider service</h2>
+<p>Back on the <strong>FlutterAccountRegistrationState</strong> class, inside and at the top of the <strong>build</strong> method, let&#39;s bring an instance of the <strong>LoginService</strong> using the <strong>Provider.of</strong>, passing  the content and the <strong>listen: false</strong> flag:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/b9e922ad90d562e4.png"></p>
+<p>Navigate to the &#34;Register&#34; <strong>FlutterBankMainButton</strong> widget within this structure, and on its <strong>onTap</strong> handler, do the following:</p>
+<ul>
+<li>decorate the <strong>onTap</strong> handler with the <strong>async</strong> keyword</li>
+<li>capture both username and password from their respective controllers</li>
+<li>make the call to the loginService.createUserWithEmailAndPassword, passing the username and password collected; hold the resulting value on a variable called <strong>accountCreated</strong></li>
+<li>verify if the <strong>accountCreated</strong> is true, then just pop the user back out to the login screen (since this screen will be navigatable from the login screen upon clicking on <strong>Register</strong>)</li>
+</ul>
+<p>Your code should look like this:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/220815de11d9143.png"></p>
+<h2 is-upgraded>Adding some simple validation</h2>
+<p>Before we wrap up, let&#39;s add some needed validation. I&#39;ll leave the additional error handling and displaying to your as homework ;).</p>
+<p>Inside this same <strong>FlutterAccountRegistrationState</strong> class, let&#39;s add a simple method to perform the validation on the values in our fields, checking for the following:</p>
+<ul>
+<li>that the <strong>username</strong> field has a valid email</li>
+<li>that all three fields are not empty</li>
+<li>that both password and confirm password&#39;s text content are equal</li>
+</ul>
+<p>Your code should look like this:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/a78fcacd2bc04eb2.png"></p>
+<aside class="special"><p>Again, this is a simple validation; there are better and more streamlined ways of performing field validation, which I suggest you explore or check out (pub.dev)[https://pub.dev] packages on this.</p>
+</aside>
+<p>Back to the <strong>Register</strong> button, replace the hardcoded <strong>enabled</strong> value of <strong>true</strong> by whatever this validation method returns, as such:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/9333731d4a09b1d3.png"></p>
+<p>The validation then should look like this:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/76971fd9fdc933b0.gif"></p>
+<h2 is-upgraded>Bringing it all together</h2>
+<p>Now for this to work we have to navigate to this page from the login page, otherwise we&#39;ll get an exception when we attempt to do a <strong>Navigator.of(context).pop()</strong> since we don&#39;t have anything to get back to (remember what we did on the <strong>FlutterBankApp</strong> widget?). Let&#39;s undo that (bring back the splash page):</p>
+<p class="image-container"><img alt="Registration Screen" src="img/b368184f8b532574.png"></p>
+<p>Now, go to the <strong>FlutterBankLoginState</strong> widget page, find the <strong>FlutterBankMainButton</strong> for the <strong>Register</strong> action, and on its <strong>onTap</strong> event handler, just simply navigate to the <strong>FlutterAccountRegistration</strong> using a <strong>Navigator.of(context)</strong>, pushing a new <strong>MaterialPageRoute</strong> that wraps this page:</p>
+<p class="image-container"><img alt="Registration Screen" src="img/78e07e630df86916.png"></p>
+<p>Take this for a spin on DartPad and execute the account registration workflow:</p>
+<ul>
+<li>navigate to the login page</li>
+<li>click on the &#34;Register&#34; button</li>
+<li>fill out the form</li>
+<li>if successful,  you&#39;ll be kicked back to the login screen</li>
+<li>if you want, try logging in as the new account you created and check it out</li>
+</ul>
+<p>Ensure it is an account that doesn&#39;t exist for this to work (I&#39;ll try <strong>testclient@gmail.com</strong>, with password <strong>123456</strong>) and check out if it made it all the way to Firebase&#39;s list of registered users.</p>
+<p class="image-container"><img alt="Registration Screen" src="img/5f732175d55c8fd3.png"></p>
+<p>And indeed my new user is registered, now I can go ahead and log in with this new user! Amazing work, y&#39;all!</p>
+<p>And with this, we officially wrap up this bonus codelab portion. Kudos for the extra work done and thanks for sticking around all the way!</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Complete Code (without Account Registration)" duration="0">
+        <p>In case you fell behind on this codelab, below is the whole code for this codelab in a way you can copy / paste directly into DartPad:</p>
+<pre><code language="language-flutter" class="language-flutter">import &#39;package:flutter/material.dart&#39;;
+import &#39;package:google_fonts/google_fonts.dart&#39;;
+import &#39;package:firebase_core/firebase_core.dart&#39;;
+import &#39;package:cloud_firestore/cloud_firestore.dart&#39;;
+import &#39;package:firebase_auth/firebase_auth.dart&#39;;
+import &#39;package:provider/provider.dart&#39;;
+
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: &#34;AIzaSyBwSM_bH2-kid-TtJPxZUo0Xw_QO8kgsU8&#34;,
+      authDomain: &#34;flutter-bank-app-6ec93.firebaseapp.com&#34;,
+      projectId: &#34;flutter-bank-app-6ec93&#34;,
+      storageBucket: &#34;flutter-bank-app-6ec93.appspot.com&#34;,
+      messagingSenderId: &#34;182673651632&#34;,
+      appId: &#34;1:182673651632:web:aad3511575ff2677108875&#34;
+    )
+  );
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) =&gt; LoginService(),
+        )
+      ],
+      child: FlutterBankApp()
+    )
+  );
+}
+
+class FlutterBankApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        textTheme: GoogleFonts.poppinsTextTheme(
+          Theme.of(context).textTheme
+        )
+      ),
+      debugShowCheckedModeBanner: false,
+      home: FlutterBankSplash() 
+    );
+  }
+}
+
+class FlutterBankSplash extends StatelessWidget {
+  
+  @override
+  Widget build(BuildContext context) {
+
+    Future.delayed(const Duration(seconds: 2), () {
+       Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) =&gt; FlutterBankLogin())
+       );   
+     });
+
+    return Scaffold(
+      backgroundColor: Utils.mainThemeColor,
+      body: Stack(
+        children: const [
+          Center(
+            child: Icon(Icons.savings, color: Colors.white, size: 60)
+          ),
+          Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator(
+                strokeWidth: 8,
+                valueColor: AlwaysStoppedAnimation&lt;Color&gt;(Colors.white)
+              )
+            )
+          )
+        ],
+      )
+    );
+  }
+}
+
+class FlutterBankLogin extends StatefulWidget {
+  @override
+  FlutterBankLoginState createState() =&gt; FlutterBankLoginState();
+}
+
+class FlutterBankLoginState extends State&lt;FlutterBankLogin&gt;{
+
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+
+    LoginService loginService  = Provider.of&lt;LoginService&gt;(context, listen: false);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Container(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 7,
+                  color: Utils.mainThemeColor
+                ),
+                borderRadius: BorderRadius.circular(100)
+              ),
+              child: const Icon(Icons.savings, color: Utils.mainThemeColor, size: 45)
+            ),
+            const SizedBox(height: 30),
+            const Text(&#39;Welcome to&#39;, style: TextStyle(color: Colors.grey, fontSize: 15)),
+            const Text(&#39;Flutter\nSavings Bank&#39;, 
+            style: TextStyle(color: Utils.mainThemeColor, fontSize: 30)),
+
+
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center, 
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(&#39;Sign Into Your Bank Account&#39;, 
+                         textAlign: TextAlign.center, 
+                         style: TextStyle(color: Colors.grey, fontSize: 12)
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(50)
+                      ),
+                      child: TextField(
+                        onChanged: (text) {
+                          setState(() {});
+                        },
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          prefixIcon: Icon(Icons.email, color: Utils.mainThemeColor),
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.only(
+                            left: 20, bottom: 11, top: 11, right: 15
+                          ),
+                          hintText: &#34;Email&#34;
+                        ),
+                        style: const TextStyle(fontSize: 16),
+                        controller: usernameController
+                      ) 
+                    ),
+                    const SizedBox(height: 20),
+                    
+                    // password Container wrapper 
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(50)
+                      ),
+                      child: TextField(
+                        onChanged: (text) {
+                          setState(() {});
+                        },
+                        obscureText: true,
+                        obscuringCharacter: &#34;*&#34;,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.lock, color: Utils.mainThemeColor),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.only(
+                            left: 15, bottom: 11, top: 11, right: 15
+                          ),
+                          hintText: &#34;Password&#34;
+                        ),
+                        controller: passwordController,
+                        style: const TextStyle(fontSize: 16),
+                      )
+                    ),
+                    
+                    Consumer&lt;LoginService&gt;(
+                      builder: (context, lService, child) {
+
+                        String errorMsg = lService.getErrorMessage();
+                      
+                        if (errorMsg.isEmpty) {
+                          return const SizedBox(height: 40);
+                        }
+
+                        return Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.warning, color: Colors.red),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  errorMsg, 
+                                  style: const TextStyle(color: Colors.red)
+                                )
+                              )
+                            ]
+                          )
+                        );
+                      }
+                    )
+
+
+                  ]
+                )
+              )
+            ),
+            
+
+            FlutterBankMainButton(
+              label: &#39;Sign In&#39;,
+              enabled: validateEmailAndPassword(),
+              onTap: () async {
+                var username = usernameController.value.text;
+                var pwd = passwordController.value.text;
+
+                bool isLoggedIn = await loginService.signInWithEmailAndPassword(username, pwd);
+
+                if (isLoggedIn) {
+                  usernameController.clear();
+                  passwordController.clear();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) =&gt; FlutterBankMain())
+                  );
+                }
+              }
+            ),
+            
+            const SizedBox(height: 10),
+            FlutterBankMainButton(
+              label: &#39;Register&#39;,
+              icon: Icons.account_circle,
+              onTap: () {},
+              backgroundColor: Utils.mainThemeColor.withOpacity(0.05),
+              iconColor: Utils.mainThemeColor,
+              labelColor: Utils.mainThemeColor
+            ) 
+          ]
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  bool validateEmailAndPassword() {
+    return usernameController.value.text.isNotEmpty &amp;&amp; 
+      passwordController.value.text.isNotEmpty 
+        &amp;&amp; Utils.validateEmail(usernameController.value.text);
+  }
+}
+
+class FlutterBankMainButton extends StatelessWidget {
+  
+  final Function? onTap;
+  final String? label;
+  final bool? enabled;
+  final IconData? icon;
+  final Color? backgroundColor;
+  final Color? iconColor;
+  final Color? labelColor;
+  
+  const FlutterBankMainButton({
+    Key? key, this.label, this.onTap, 
+    this.icon, 
+    this.backgroundColor = Utils.mainThemeColor, 
+    this.iconColor = Colors.white,
+    this.labelColor = Colors.white,
+    this.enabled = true })
+  : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: Material(
+            color: enabled! ? backgroundColor : backgroundColor!.withOpacity(0.5),
+              child: InkWell(
+              onTap: enabled! ? () {
+                onTap!();
+              } : null,
+              highlightColor: Colors.white.withOpacity(0.2),
+              splashColor: Colors.white.withOpacity(0.1),
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50)
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Visibility(
+                        visible: icon != null,
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          child: Icon(icon, color: iconColor, size: 20),
+                        )
+                      ),
+                      Text(label!, textAlign: TextAlign.center, 
+                        style: TextStyle(
+                          color: labelColor, 
+                          fontWeight: FontWeight.bold
+                        )
+                    )
+                  ]
+                )
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class FlutterBankMain extends StatelessWidget {
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Text(&#39;main page&#39;),
+      )
+    );
+  }
+}
+
+class Utils {
+  static const Color mainThemeColor = Color(0xFF8700C3);
+
+  static bool validateEmail(String? value) {
+    String pattern =
+        r&#34;^[a-zA-Z0-9.!#$%&amp;&#39;*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]&#34;
+        r&#34;{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]&#34;
+        r&#34;{0,253}[a-zA-Z0-9])?)*$&#34;;
+    RegExp regex = RegExp(pattern);
+    
+    return (value != null || value!.isNotEmpty || regex.hasMatch(value));
+  }
+}
+
+
+class LoginService extends ChangeNotifier {
+
+  String _userId = &#39;&#39;;
+  String _errorMessage = &#39;&#39;;
+  
+  String getErrorMessage() {
+    return _errorMessage;
+  }
+
+  void setLoginErrorMessage(String msg) {
+    _errorMessage = msg;
+    notifyListeners();
+  }
+
+  String getUserId() {
+    return _userId;
+  }
+
+
+  Future&lt;bool&gt; signInWithEmailAndPassword(String email, String password) async {
+    setLoginErrorMessage(&#39;&#39;);
+
+    try {
+      UserCredential credentials = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      
+      _userId = credentials.user!.uid;
+      
+      return true;
+      
+    } on FirebaseAuthException catch (ex) {
+      setLoginErrorMessage(&#39;Error during sign-in: &#39; + ex.message!);
+      return false;
+    }
+  }
+}
+
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Complete Code (with the Account Registration)" duration="0">
+        <pre><code language="language-flutter" class="language-flutter">import &#39;package:flutter/material.dart&#39;;
+import &#39;package:google_fonts/google_fonts.dart&#39;;
+import &#39;package:firebase_core/firebase_core.dart&#39;;
+import &#39;package:cloud_firestore/cloud_firestore.dart&#39;;
+import &#39;package:firebase_auth/firebase_auth.dart&#39;;
+import &#39;package:provider/provider.dart&#39;;
+
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: &#34;AIzaSyBwSM_bH2-kid-TtJPxZUo0Xw_QO8kgsU8&#34;,
+      authDomain: &#34;flutter-bank-app-6ec93.firebaseapp.com&#34;,
+      projectId: &#34;flutter-bank-app-6ec93&#34;,
+      storageBucket: &#34;flutter-bank-app-6ec93.appspot.com&#34;,
+      messagingSenderId: &#34;182673651632&#34;,
+      appId: &#34;1:182673651632:web:aad3511575ff2677108875&#34;
+    )
+  );
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) =&gt; LoginService(),
+        )
+      ],
+      child: FlutterBankApp()
+    )
+  );
+}
+
+class FlutterBankApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        textTheme: GoogleFonts.poppinsTextTheme(
+          Theme.of(context).textTheme
+        )
+      ),
+      debugShowCheckedModeBanner: false,
+      home: FlutterBankSplash() 
+    );
+  }
+}
+
+class FlutterBankSplash extends StatelessWidget {
+  
+  @override
+  Widget build(BuildContext context) {
+
+    Future.delayed(const Duration(seconds: 2), () {
+       Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) =&gt; FlutterBankLogin())
+       );   
+     });
+
+    return Scaffold(
+      backgroundColor: Utils.mainThemeColor,
+      body: Stack(
+        children: const [
+          Center(
+            child: Icon(Icons.savings, color: Colors.white, size: 60)
+          ),
+          Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator(
+                strokeWidth: 8,
+                valueColor: AlwaysStoppedAnimation&lt;Color&gt;(Colors.white)
+              )
+            )
+          )
+        ],
+      )
+    );
+  }
+}
+
+class FlutterBankLogin extends StatefulWidget {
+  @override
+  FlutterBankLoginState createState() =&gt; FlutterBankLoginState();
+}
+
+class FlutterBankLoginState extends State&lt;FlutterBankLogin&gt;{
+
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+
+    LoginService loginService  = Provider.of&lt;LoginService&gt;(context, listen: false);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Container(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 7,
+                  color: Utils.mainThemeColor
+                ),
+                borderRadius: BorderRadius.circular(100)
+              ),
+              child: const Icon(Icons.savings, color: Utils.mainThemeColor, size: 45)
+            ),
+            const SizedBox(height: 30),
+            const Text(&#39;Welcome to&#39;, style: TextStyle(color: Colors.grey, fontSize: 15)),
+            const Text(&#39;Flutter\nSavings Bank&#39;, 
+            style: TextStyle(color: Utils.mainThemeColor, fontSize: 30)),
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center, 
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(&#39;Sign Into Your Bank Account&#39;, 
+                         textAlign: TextAlign.center, 
+                         style: TextStyle(color: Colors.grey, fontSize: 12)
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(50)
+                      ),
+                      child: TextField(
+                        onChanged: (text) {
+                          setState(() {});
+                        },
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          prefixIcon: Icon(Icons.email, color: Utils.mainThemeColor),
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.only(
+                            left: 20, bottom: 11, top: 11, right: 15
+                          ),
+                          hintText: &#34;Email&#34;
+                        ),
+                        style: const TextStyle(fontSize: 16),
+                        controller: usernameController
+                      ) 
+                    ),
+                    const SizedBox(height: 20),
+                    
+                    // password Container wrapper 
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(50)
+                      ),
+                      child: TextField(
+                        onChanged: (text) {
+                          setState(() {});
+                        },
+                        obscureText: true,
+                        obscuringCharacter: &#34;*&#34;,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.lock, color: Utils.mainThemeColor),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.only(
+                            left: 15, bottom: 11, top: 11, right: 15
+                          ),
+                          hintText: &#34;Password&#34;
+                        ),
+                        controller: passwordController,
+                        style: const TextStyle(fontSize: 16),
+                      )
+                    ),
+                    
+                    Consumer&lt;LoginService&gt;(
+                      builder: (context, lService, child) {
+
+                        String errorMsg = lService.getErrorMessage();
+                      
+                        if (errorMsg.isEmpty) {
+                          return const SizedBox(height: 40);
+                        }
+
+                        return Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.warning, color: Colors.red),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  errorMsg, 
+                                  style: const TextStyle(color: Colors.red)
+                                )
+                              )
+                            ]
+                          )
+                        );
+                      }
+                    )
+
+
+                  ]
+                )
+              )
+            ),
+            FlutterBankMainButton(
+              label: &#39;Sign In&#39;,
+              enabled: validateEmailAndPassword(),
+              onTap: () async {
+                var username = usernameController.value.text;
+                var pwd = passwordController.value.text;
+
+                bool isLoggedIn = await loginService.signInWithEmailAndPassword(username, pwd);
+
+                if (isLoggedIn) {
+                  usernameController.clear();
+                  passwordController.clear();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) =&gt; FlutterBankMain())
+                  );
+                }
+              }
+            ),
+            const SizedBox(height: 10),
+            
+            FlutterBankMainButton(
+              label: &#39;Register&#39;,
+              icon: Icons.account_circle,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) =&gt; FlutterAccountRegistration())
+                );
+              },
+              backgroundColor: Utils.mainThemeColor.withOpacity(0.05),
+              iconColor: Utils.mainThemeColor,
+              labelColor: Utils.mainThemeColor
+            ) 
+
+          ]
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  bool validateEmailAndPassword() {
+    return usernameController.value.text.isNotEmpty &amp;&amp; 
+      passwordController.value.text.isNotEmpty 
+        &amp;&amp; Utils.validateEmail(usernameController.value.text);
+  }
+}
+
+class FlutterAccountRegistration extends StatefulWidget {
+  @override
+  FlutterAccountRegistrationState createState() =&gt; FlutterAccountRegistrationState();
+}
+
+class FlutterAccountRegistrationState extends State&lt;FlutterAccountRegistration&gt; {
+
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+
+    LoginService loginService = Provider.of&lt;LoginService&gt;(context, listen: false);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Utils.mainThemeColor),
+        backgroundColor: Colors.transparent,
+        title: const Icon(Icons.savings, color: Utils.mainThemeColor, size: 40),
+        centerTitle: true
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // title
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 40),
+                    child: Text(&#39;Create New Account&#39;, 
+                      style: TextStyle(color: Utils.mainThemeColor, fontSize: 20)
+                    )
+                  ),         
+                  // email field
+                  Utils.generateInputField(&#39;Email&#39;, Icons.email, 
+                    usernameController, 
+                    false, (text) {
+                      setState(() {});
+                  }),
+                  // password field
+                  Utils.generateInputField(&#39;Password&#39;, Icons.lock, 
+                    passwordController, 
+                    true, (text) {
+                      setState(() {});
+                  }),
+                  // password confirmation field
+                  Utils.generateInputField(&#39;Confirm Password&#39;, Icons.lock, 
+                    confirmPasswordController, 
+                    true, (text) {
+                      setState(() {});
+                  }),
+                ]
+              )
+            ),
+            FlutterBankMainButton(
+              label: &#39;Register&#39;,
+              enabled: validateFormFields(),
+              onTap: () async {
+                String username = usernameController.value.text;
+                String pwd = passwordController.value.text;
+
+                bool accountCreated = 
+                    await loginService.createUserWithEmailAndPassword(username, pwd);
+
+                if (accountCreated) {
+                  Navigator.of(context).pop();
+                }
+              }
+            )
+          ]
+        )
+      )
+    );
+  }
+
+  bool validateFormFields() {
+    return Utils.validateEmail(usernameController.value.text) &amp;&amp;
+     usernameController.value.text.isNotEmpty &amp;&amp;
+      passwordController.value.text.isNotEmpty &amp;&amp;
+      confirmPasswordController.value.text.isNotEmpty &amp;&amp;
+      (passwordController.value.text == confirmPasswordController.value.text);
+  }
+}
+
+class FlutterBankMainButton extends StatelessWidget {
+  
+  final Function? onTap;
+  final String? label;
+  final bool? enabled;
+  final IconData? icon;
+  final Color? backgroundColor;
+  final Color? iconColor;
+  final Color? labelColor;
+  
+  const FlutterBankMainButton({
+    Key? key, this.label, this.onTap, 
+    this.icon, 
+    this.backgroundColor = Utils.mainThemeColor, 
+    this.iconColor = Colors.white,
+    this.labelColor = Colors.white,
+    this.enabled = true })
+  : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: Material(
+            color: enabled! ? backgroundColor : backgroundColor!.withOpacity(0.5),
+              child: InkWell(
+              onTap: enabled! ? () {
+                onTap!();
+              } : null,
+              highlightColor: Colors.white.withOpacity(0.2),
+              splashColor: Colors.white.withOpacity(0.1),
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50)
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Visibility(
+                        visible: icon != null,
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          child: Icon(icon, color: iconColor, size: 20),
+                        )
+                      ),
+                      Text(label!, textAlign: TextAlign.center, 
+                        style: TextStyle(
+                          color: labelColor, 
+                          fontWeight: FontWeight.bold
+                        )
+                    )
+                  ]
+                )
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class FlutterBankMain extends StatelessWidget {
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Text(&#39;main page&#39;),
+      )
+    );
+  }
+}
+
+class Utils {
+  static const Color mainThemeColor = Color(0xFF8700C3);
+
+  static bool validateEmail(String? value) {
+    String pattern =
+        r&#34;^[a-zA-Z0-9.!#$%&amp;&#39;*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]&#34;
+        r&#34;{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]&#34;
+        r&#34;{0,253}[a-zA-Z0-9])?)*$&#34;;
+    RegExp regex = RegExp(pattern);
+    
+    return (value != null || value!.isNotEmpty || regex.hasMatch(value));
+  }
+
+  static Widget generateInputField(
+    String hintText, 
+    IconData iconData, 
+    TextEditingController controller, 
+    bool isPasswordField, 
+    Function onChanged) {
+
+    return Container(
+      padding: const EdgeInsets.all(5),
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(50)
+      ),
+      child: TextField(
+        onChanged: (text) {
+          onChanged(text);
+        },
+        obscureText: isPasswordField,
+        obscuringCharacter: &#34;*&#34;,
+        decoration: InputDecoration(
+          prefixIcon: Icon(iconData, color: Utils.mainThemeColor),
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+          hintText: hintText
+        ),
+        controller: controller,
+        style: const TextStyle(fontSize: 16),
+      )
+    );
+  }
+}
+
+class LoginService extends ChangeNotifier {
+
+  String _userId = &#39;&#39;;
+  String _errorMessage = &#39;&#39;;
+  
+  String getErrorMessage() {
+    return _errorMessage;
+  }
+
+  void setLoginErrorMessage(String msg) {
+    _errorMessage = msg;
+    notifyListeners();
+  }
+
+  String getUserId() {
+    return _userId;
+  }
+
+  Future&lt;bool&gt; createUserWithEmailAndPassword(String email, String pwd) async {
+
+    try {
+      UserCredential userCredentials = 
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: pwd);
+      
+      return true; // or userCredentials != null;
+      
+    } on FirebaseAuthException {
+      return false;
+    }
+  }
+
+  Future&lt;bool&gt; signInWithEmailAndPassword(String email, String password) async {
+    setLoginErrorMessage(&#39;&#39;);
+
+    try {
+      UserCredential credentials = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      
+      _userId = credentials.user!.uid;
+      
+      return true;
+      
+    } on FirebaseAuthException catch (ex) {
+      setLoginErrorMessage(&#39;Error during sign-in: &#39; + ex.message!);
+      return false;
+    }
+  }
+}
+
+</code></pre>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

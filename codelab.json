@@ -1,0 +1,25 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2022-02-02T21:50:52-05:00",
+  "id": "flutter-codelab-cr3-3",
+  "duration": 0,
+  "title": "Flutter Codelab / Coding Roulette: Full Stack Flutter Apps Workshop (pt.3): Firebase Authentication",
+  "authors": "Roman Jaquez",
+  "summary": "Flutter Codelab / Coding Roulette #3",
+  "source": "flutter-codelab-cr3-3.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "flutter"
+  ],
+  "tags": [
+    "flutter"
+  ],
+  "feedback": "https://romanjustcodes.web.app",
+  "url": "flutter-codelab-cr3-3"
+}
